@@ -37,3 +37,10 @@ Route::get('/recuperar', function () {
 
 // (Asegúrate de que esta ruta esté en web.php y no en api.php para que funcione con el formulario Blade)
 Route::post('/recuperar-password', [\App\Http\Controllers\PasswordResetController::class, 'solicitarRecuperacion']);
+use Illuminate\Http\Request;
+
+// Ruta para MOSTRAR el formulario de nueva contraseña
+Route::get('/restablecer', function (Request $request) {
+    // Le pasamos el token de la URL a la vista para que pueda enviarlo al controlador
+    return view('restablecer', ['token' => $request->token]);
+});
