@@ -22,3 +22,11 @@ Route::middleware('auth')->group(function () {
     })->name('inicio');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
+
+use App\Http\Controllers\PasswordResetController;
+
+// Ruta para solicitar el correo (Cumple CA-03.1)
+Route::post('/recuperar-password', [PasswordResetController::class, 'solicitarRecuperacion']);
+
+// Ruta para enviar la nueva contraseña con el token
+Route::post('/restablecer-password', [PasswordResetController::class, 'restablecerPassword']);
