@@ -5,11 +5,12 @@
     <title>Inicio</title>
 </head>
 <body>
-    <h1>Bienvenido, {{ auth()->user()->name }}</h1>
+    <h1>Bienvenido a tu panel</h1>
 
+    <!-- Formulario para cumplir CA-04.1 -->
     <form action="{{ route('logout') }}" method="POST">
         @csrf
-        <button type="submit">Cerrar sesión</button>
+        <button type="submit">Cerrar Sesión</button>
     </form>
 </body>
 </html>
