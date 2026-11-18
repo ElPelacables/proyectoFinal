@@ -44,3 +44,8 @@ Route::get('/restablecer', function (Request $request) {
     // Le pasamos el token de la URL a la vista para que pueda enviarlo al controlador
     return view('restablecer', ['token' => $request->token]);
 });
+use App\Http\Controllers\TaskController;
+
+Route::middleware('auth')->group(function () {
+    Route::resource('tasks', TaskController::class);
+});
