@@ -32,11 +32,11 @@
                 </a>
 
                 <nav style="display:flex; flex-direction:column; gap:8px;">
-                    <a href="{{ route('tasks.index', ['filter' => 'pendientes']) }}" style="display:flex; justify-content:space-between; align-items:center; padding:.65rem .9rem; border-radius:10px; background:{{ request('filter') === 'pendientes' ? '#fff' : 'rgba(255,255,255,.2)' }}; color:{{ request('filter') === 'pendientes' ? '#111827' : '#fff' }}; font-weight:600; text-decoration:none;">
+                    <a href="{{ route('tasks.index', ['filter' => 'pendientes', 'search' => request('search')]) }}" style="display:flex; justify-content:space-between; align-items:center; padding:.65rem .9rem; border-radius:10px; background:{{ request('filter') === 'pendientes' ? '#fff' : 'rgba(255,255,255,.2)' }}; color:{{ request('filter') === 'pendientes' ? '#111827' : '#fff' }}; font-weight:600; text-decoration:none;">
                         <span>☆ Pendientes</span>
                         <span style="background:#fff; color:#111827; border-radius:999px; padding:1px 8px; font-size:.8rem; font-weight:700;">{{ $pendingCount }}</span>
                     </a>
-                    <a href="{{ route('tasks.index') }}" style="display:block; padding:.65rem .9rem; border-radius:10px; background:{{ request('filter') !== 'pendientes' ? '#fff' : 'rgba(255,255,255,.2)' }}; color:{{ request('filter') !== 'pendientes' ? '#111827' : '#fff' }}; font-weight:600; text-decoration:none;">
+                    <a href="{{ route('tasks.index', ['search' => request('search')]) }}" style="display:block; padding:.65rem .9rem; border-radius:10px; background:{{ request('filter') !== 'pendientes' ? '#fff' : 'rgba(255,255,255,.2)' }}; color:{{ request('filter') !== 'pendientes' ? '#111827' : '#fff' }}; font-weight:600; text-decoration:none;">
                         📅 Mes
                     </a>
                 </nav>
@@ -66,9 +66,16 @@
         <main style="flex:1; display:flex; flex-direction:column;">
             {{-- BARRA SUPERIOR --}}
             <header style="background:#56a3f5; padding:.85rem 2rem; display:flex; justify-content:space-between; align-items:center;">
-                <form action="{{ route('tasks.index') }}" method="GET" style="width:360px;">
+                <form action="{{ route('tasks.index') }}" method="GET" style="width:380px; position:relative; display:flex; align-items:center;">
+                    @if(request('filter'))
+                        <input type="hidden" name="filter" value="{{ request('filter') }}">
+                    @endif
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="🔍 Buscar recordatorios..."
-                           style="width:100%; padding:.55rem 1rem; border-radius:10px; border:none; outline:none;">
+                           style="width:100%; padding:.55rem 2.2rem .55rem 1rem; border-radius:10px; border:none; outline:none;">
+                    @if(request()->filled('search'))
+                        <a href="{{ route('tasks.index', request()->only('filter')) }}" title="Limpiar búsqueda"
+                           style="position:absolute; right:10px; color:#64748b; text-decoration:none; font-weight:700; font-size:.9rem;">✕</a>
+                    @endif
                 </form>
 
                 <div style="display:flex; align-items:center; gap:12px;">
@@ -96,6 +103,13 @@
                         + Crear recordatorio
                     </a>
                 </div>
+
+                @if(request()->filled('search'))
+                    <div style="background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; padding:.65rem 1rem; border-radius:10px; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; font-size:.9rem;">
+                        <span>Mostrando <strong>{{ $tasks->count() }}</strong> resultado(s) para <strong>«{{ request('search') }}»</strong></span>
+                        <a href="{{ route('tasks.index', request()->only('filter')) }}" style="color:#1d4ed8; font-weight:600; text-decoration:none;">Ver todos</a>
+                    </div>
+                @endif
 
                 {{-- TARJETA DEL CALENDARIO MENSUAL --}}
                 <section style="background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 8px 24px rgba(15,23,42,.08); margin-bottom:2rem;">
@@ -183,7 +197,11 @@
                             </article>
                         @empty
                             <div style="grid-column:1/-1; background:#fff; border-radius:16px; padding:2rem; text-align:center; color:#64748b;">
-                                No tienes recordatorios registrados todavía. Haz clic en <strong>+ Nuevo recordatorio</strong> para crear el primero.
+                                @if(request()->filled('search'))
+                                    No se encontraron recordatorios que coincidan con <strong>«{{ request('search') }}»</strong>.
+                                @else
+                                    No tienes recordatorios registrados todavía. Haz clic en <strong>+ Nuevo recordatorio</strong> para crear el primero.
+                                @endif
                             </div>
                         @endforelse
                     </div>

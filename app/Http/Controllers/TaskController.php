@@ -14,19 +14,22 @@ class TaskController extends Controller
     {
         $query = Task::where('user_id', Auth::id());
 
-        if ($request->filled('search')) {$search = $request->input('search');$query->where(function ($q) use ($search) {
-                $q->where('nombre', 'like', "\%{$search}%")
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
                   ->orWhere('descripcion', 'like', "%{$search}%");
             });
         }
 
-        if ($request->input('filter') === 'pendientes') {$query->where('estado', '!=', 'Completada');
+        if ($request->input('filter') === 'pendientes') {
+            $query->where('estado', '!=', 'Completada');
         }
 
-        $tasks =$query->orderBy('fecha_inicio')->get();
+        $tasks = $query->orderBy('fecha_inicio')->get();
 
-        $month = (int)$request->query('month', now()->month);
-        $year = (int)$request->query('year', now()->year);
+        $month = (int) $request->query('month', now()->month);
+        $year = (int) $request->query('year', now()->year);
 
         return view('tasks.index', compact('tasks', 'month', 'year'));
     }
@@ -38,7 +41,8 @@ class TaskController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated =$this->validateTask($request);$validated['user_id'] = Auth::id();
+        $validated = $this->validateTask($request);
+        $validated['user_id'] = Auth::id();
 
         Task::create($validated);
 
@@ -65,7 +69,7 @@ class TaskController extends Controller
         return view('tasks.edit', compact('task'));
     }
 
-    public function update(Request $request, Task$task): RedirectResponse
+    public function update(Request $request, Task $task): RedirectResponse
     {
         if ($task->user_id !== Auth::id()) {
             abort(403, 'No tienes permiso para modificar esta tarea.');
